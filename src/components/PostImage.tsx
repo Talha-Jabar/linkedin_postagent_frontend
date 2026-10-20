@@ -4,20 +4,24 @@ import { useState } from "react";
 import { ApiError } from "../api/client";
 import { api, imageUrl } from "../api/posts";
 import type { Post } from "../api/types";
-import { useRemoveImage, useRenderImage } from "../hooks/queries";
+import { useProfile, useRemoveImage, useRenderImage } from "../hooks/queries";
+import { styleLabel } from "../lib/format";
 import { ErrorAlert } from "./ErrorAlert";
 
 /** Show, copy, download, regenerate, add or remove the post's image. */
 export function PostImage({ post }: { post: Post }) {
+  const profile = useProfile();
   const render = useRenderImage();
   const remove = useRemoveImage();
   const [editing, setEditing] = useState(false);
-  const [prompt, setPrompt] = useState(post.image_prompt ?? "");
+  const [prompt, setPrompt] = useState("");
+  const [style, setStyle] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [actionError, setActionError] = useState<Error | null>(null);
   const [brokenSrc, setBrokenSrc] = useState<string | null>(null);
   const busy = render.isPending || remove.isPending;
   const src = imageUrl(post);
+  const styles = profile.data?.image_styles ?? [];
 
   function flash(message: string) {
     setNotice(message);
@@ -53,12 +57,17 @@ export function PostImage({ post }: { post: Post }) {
 
   function generate() {
     render.mutate(
-      { id: post.id, prompt: prompt.trim() || undefined },
+      { id: post.id, prompt: prompt.trim() || undefined, style: style || undefined },
       {
         onSuccess: (updated) => {
           setEditing(false);
-          setPrompt(updated.image_prompt ?? "");
-          flash(post.has_image ? "New image ready." : "Image added.");
+          setPrompt("");
+          setStyle("");
+          flash(
+            `${post.has_image ? "New image" : "Image"} ready${
+              updated.image_style ? ` — ${styleLabel(updated.image_style)}` : ""
+            }.`,
+          );
         },
       },
     );
@@ -88,16 +97,21 @@ export function PostImage({ post }: { post: Post }) {
           </div>
         )}
         {busy && (
-          <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-ink-2 backdrop-blur-sm">
+          <div className="absolute inset-0 grid place-items-center bg-surface/80 p-4 text-center text-sm text-ink-2 backdrop-blur-sm">
             <span className="inline-flex items-center gap-2">
               <Loader2 className="size-4 animate-spin" aria-hidden />
-              {render.isPending ? "Drawing the image… about 20–40 seconds" : "Removing…"}
+              {render.isPending ? "Designing and drawing the image… about 30–40 seconds" : "Removing…"}
             </span>
           </div>
         )}
       </div>
 
       <div className="space-y-3 p-4">
+        {post.has_image && post.image_style && (
+          <p className="text-xs text-ink-3">
+            Style: <span className="font-medium text-ink-2">{styleLabel(post.image_style)}</span>
+          </p>
+        )}
         {post.has_image ? (
           <div className="flex flex-wrap gap-2">
             <button type="button" className="btn btn-secondary" onClick={copyImage} disabled={busy}>
@@ -108,7 +122,13 @@ export function PostImage({ post }: { post: Post }) {
               <Download className="size-4" aria-hidden />
               Download
             </button>
-            <button type="button" className="btn btn-secondary" onClick={() => setEditing((v) => !v)} disabled={busy}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setEditing((v) => !v)}
+              disabled={busy}
+              aria-expanded={editing}
+            >
               <RefreshCw className="size-4" aria-hidden />
               Regenerate
             </button>
@@ -127,18 +147,55 @@ export function PostImage({ post }: { post: Post }) {
         )}
 
         {editing && (
-          <div className="space-y-2">
-            <label className="label" htmlFor={`image-prompt-${post.id}`}>
-              Image description
-            </label>
-            <textarea
-              id={`image-prompt-${post.id}`}
-              className="field min-h-24 resize-y"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Optional — leave empty and the AI designs an image from the post."
-            />
-            <p className="text-xs text-ink-3">Colors and art style come from the images section of your profile.</p>
+          <div className="space-y-3 rounded-lg border border-line bg-sunken p-3">
+            <div>
+              <label className="label" htmlFor={`image-style-${post.id}`}>
+                Style
+              </label>
+              <select
+                id={`image-style-${post.id}`}
+                className="field"
+                value={style}
+                onChange={(e) => setStyle(e.target.value)}
+                disabled={busy}
+              >
+                <option value="">
+                  {post.has_image ? "Automatic (a different style)" : "Automatic (suited to this post)"}
+                </option>
+                {styles.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {styleLabel(s.key)}
+                  </option>
+                ))}
+              </select>
+              {style && (
+                <p className="mt-1 text-xs text-ink-3">{styles.find((s) => s.key === style)?.description}</p>
+              )}
+            </div>
+            <div>
+              <div className="flex items-baseline justify-between gap-2">
+                <label className="label" htmlFor={`image-prompt-${post.id}`}>
+                  Your description (optional)
+                </label>
+                {post.image_prompt && !prompt && (
+                  <button
+                    type="button"
+                    className="text-xs font-semibold text-brand-text hover:underline"
+                    onClick={() => setPrompt(post.image_prompt ?? "")}
+                  >
+                    Start from the current one
+                  </button>
+                )}
+              </div>
+              <textarea
+                id={`image-prompt-${post.id}`}
+                className="field min-h-24 resize-y field-sizing-content"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Leave empty for a fresh design by the AI art director, or describe exactly what you want."
+                disabled={busy}
+              />
+            </div>
             <div className="flex gap-2">
               <button type="button" className="btn btn-primary" onClick={generate} disabled={busy}>
                 {post.has_image ? "Generate new image" : "Generate image"}

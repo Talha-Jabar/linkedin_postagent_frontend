@@ -56,6 +56,7 @@ export interface Post {
   cta_goal: string | null;
   image_prompt: string | null;
   image_model: string | null;
+  image_style: string | null;
   context: PostContext | null;
   model: string;
   embedding_model: string;
@@ -88,6 +89,13 @@ export interface GenerateRequest {
   with_image?: boolean;
 }
 
+export interface ImageRequest {
+  /** Your own description; omit for a fresh design by the art director. */
+  prompt?: string;
+  /** Style key; omit to pick one (different from the current). */
+  style?: string;
+}
+
 export interface PostUpdate {
   content?: string;
   hashtags?: string[];
@@ -108,10 +116,16 @@ export interface PillarInfo {
   uses_experience: boolean;
 }
 
+export interface ImageStyleInfo {
+  key: string;
+  description: string;
+}
+
 export interface ProfileSummary {
   name: string;
   headline: string;
   pillars: PillarInfo[];
+  image_styles: ImageStyleInfo[];
   hashtag_min: number;
   hashtag_max: number;
   post_max_chars: number;

@@ -157,8 +157,8 @@ export function GeneratePage() {
                 <Elapsed since={run.startedAt} />
               </p>
               <p className="text-ink-2">
-                Research → writing → rule checks → image. About 15 seconds per post, plus ~20 seconds when it
-                gets an image.
+                Research → writing → rule checks → image design and context. About 20 seconds per post, or
+                about a minute when it gets an image.
               </p>
             </div>
             {run.total > 1 && (

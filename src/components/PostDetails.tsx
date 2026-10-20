@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 
 import type { Post } from "../api/types";
-import { formatDate, formatDateTime, formatPercent, pillarLabel } from "../lib/format";
+import { formatDate, formatDateTime, formatPercent, pillarLabel, styleLabel } from "../lib/format";
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -59,6 +59,7 @@ export function PostDetails({ post }: { post: Post }) {
         {post.posted_at && <Row label="Posted">{formatDateTime(post.posted_at)}</Row>}
         <Row label="Writer model">{post.model}</Row>
         {post.image_model && <Row label="Image model">{post.image_model}</Row>}
+        {post.image_style && <Row label="Image style">{styleLabel(post.image_style)}</Row>}
         <Row label="Attempts">
           {post.attempts} {post.attempts > 1 && <span className="text-ink-3">(rewritten to pass the rules)</span>}
         </Row>

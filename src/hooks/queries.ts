@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api, type ListParams } from "../api/posts";
-import type { GenerateRequest, Post, PostUpdate } from "../api/types";
+import type { GenerateRequest, ImageRequest, Post, PostUpdate } from "../api/types";
 
 export const keys = {
   health: ["health"] as const,
@@ -65,7 +65,7 @@ export function useUpdatePost() {
 export function useRenderImage() {
   const refresh = useRefresh();
   return useMutation({
-    mutationFn: ({ id, prompt }: { id: string; prompt?: string }) => api.renderImage(id, prompt),
+    mutationFn: ({ id, ...body }: { id: string } & ImageRequest) => api.renderImage(id, body),
     onSuccess: refresh,
   });
 }

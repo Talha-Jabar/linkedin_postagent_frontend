@@ -10,7 +10,7 @@ record each post's performance, and see which post types work best.
 |---|---|
 | **Generate** | Pick a post type (or automatic) and image mode, generate one post or a week of 7. Edit, copy the text, copy/download the image, open LinkedIn, mark as posted. The **Context** button next to "Copy post" opens a private briefing: the sources the post is based on, key points, replies for likely comments and further reading. |
 | **History** | Every post with status and post-type filters, kept in the URL. |
-| **Post details** | Everything above with the Context briefing open (handy while answering comments), plus: regenerate/add/remove the image, record impressions/reactions/comments/reposts, see the model, rewrite history and similarity to earlier posts. |
+| **Post details** | Everything above with the Context briefing open (handy while answering comments), plus: regenerate the image (fresh design, pick one of six visual styles, or write your own description), add/remove it, record impressions/reactions/comments/reposts, see the model, rewrite history and similarity to earlier posts. |
 | **Insights** | Overall engagement, engagement rate by post type (chart + table), image vs text-only posts. |
 
 Every backend error is shown as returned — including rule violations, the searches that were

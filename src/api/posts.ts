@@ -2,6 +2,7 @@ import { API_BASE_URL, request, requestBlob } from "./client";
 import type {
   GenerateRequest,
   Health,
+  ImageRequest,
   Post,
   PostList,
   PostStats,
@@ -42,8 +43,8 @@ export const api = {
   updatePost: (id: string, changes: PostUpdate) =>
     request<Post>(`/posts/${id}`, { method: "PATCH", ...json(changes) }),
   deletePost: (id: string) => request<void>(`/posts/${id}`, { method: "DELETE" }),
-  renderImage: (id: string, prompt?: string) =>
-    request<Post>(`/posts/${id}/image`, { method: "POST", ...json(prompt ? { prompt } : {}) }),
+  renderImage: (id: string, body: ImageRequest) =>
+    request<Post>(`/posts/${id}/image`, { method: "POST", ...json(body) }),
   removeImage: (id: string) => request<Post>(`/posts/${id}/image`, { method: "DELETE" }),
   buildContext: (id: string) => request<Post>(`/posts/${id}/context`, { method: "POST" }),
   imageBlob: (post: Post) => requestBlob(`/posts/${post.id}/image?v=${encodeURIComponent(post.updated_at)}`),

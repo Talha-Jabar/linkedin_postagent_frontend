@@ -1,4 +1,4 @@
-const ACRONYMS = new Set(["ai", "llm", "rag", "api", "ui", "ux"]);
+const ACRONYMS = new Set(["ai", "llm", "rag", "api", "ui", "ux", "3d"]);
 
 /** agentic_ai_engineering -> "Agentic AI engineering" */
 export function pillarLabel(key: string): string {
@@ -10,6 +10,9 @@ export function pillarLabel(key: string): string {
     })
     .join(" ");
 }
+
+/** isometric_3d -> "Isometric 3D" (same rules as post types). */
+export const styleLabel = (key: string): string => pillarLabel(key);
 
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
 const dateOnly = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
