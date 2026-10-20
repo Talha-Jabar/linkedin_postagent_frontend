@@ -45,5 +45,6 @@ export const api = {
   renderImage: (id: string, prompt?: string) =>
     request<Post>(`/posts/${id}/image`, { method: "POST", ...json(prompt ? { prompt } : {}) }),
   removeImage: (id: string) => request<Post>(`/posts/${id}/image`, { method: "DELETE" }),
+  buildContext: (id: string) => request<Post>(`/posts/${id}/context`, { method: "POST" }),
   imageBlob: (post: Post) => requestBlob(`/posts/${post.id}/image?v=${encodeURIComponent(post.updated_at)}`),
 };

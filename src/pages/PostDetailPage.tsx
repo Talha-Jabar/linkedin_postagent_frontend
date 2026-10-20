@@ -50,7 +50,7 @@ export function PostDetailPage() {
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="min-w-0 space-y-4">
-              <PostEditor key={post.data.id} post={post.data} profile={profile.data} />
+              <PostEditor key={post.data.id} post={post.data} profile={profile.data} contextOpen />
               <MetricsForm key={post.data.id} post={post.data} />
             </div>
             <div className="space-y-4">

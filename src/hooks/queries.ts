@@ -70,6 +70,11 @@ export function useRenderImage() {
   });
 }
 
+export function useBuildContext() {
+  const refresh = useRefresh();
+  return useMutation({ mutationFn: (id: string) => api.buildContext(id), onSuccess: refresh });
+}
+
 export function useRemoveImage() {
   const refresh = useRefresh();
   return useMutation({ mutationFn: (id: string) => api.removeImage(id), onSuccess: refresh });

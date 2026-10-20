@@ -6,6 +6,29 @@ export interface Source {
   title: string;
   url: string;
   published_date: string | null;
+  snippet?: string | null;
+}
+
+export interface LikelyQuestion {
+  question: string;
+  answer: string;
+}
+
+export interface ReadingLink {
+  title: string;
+  url: string;
+  snippet: string;
+}
+
+/** Private briefing for the author - never part of the published post. */
+export interface PostContext {
+  basis: { type: "news" | "experience" | "expertise"; detail: string };
+  summary: string;
+  key_points: string[];
+  likely_questions: LikelyQuestion[];
+  further_reading: ReadingLink[];
+  model: string;
+  generated_at: string;
 }
 
 export interface AttemptLog {
@@ -33,6 +56,7 @@ export interface Post {
   cta_goal: string | null;
   image_prompt: string | null;
   image_model: string | null;
+  context: PostContext | null;
   model: string;
   embedding_model: string;
   input_tokens: number;

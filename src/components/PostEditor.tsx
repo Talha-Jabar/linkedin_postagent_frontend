@@ -1,20 +1,31 @@
-import { CheckCircle2, Copy, ExternalLink, RotateCcw, Save, Trash2 } from "lucide-react";
+import { BookOpen, CheckCircle2, Copy, ExternalLink, RotateCcw, Save, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { Post, PostUpdate, ProfileSummary } from "../api/types";
 import { useUpdatePost } from "../hooks/queries";
 import { composeFullText, parseHashtags } from "../lib/format";
+import { ContextPanel } from "./ContextPanel";
 import { ErrorAlert } from "./ErrorAlert";
 
 const LINKEDIN_COMPOSE_URL = "https://www.linkedin.com/feed/?shareActive=true";
 
 /** Edit the text and hashtags, copy the post, and move it between draft / posted / discarded.
  *  Render with key={post.id} so switching posts resets the local edits. */
-export function PostEditor({ post, profile }: { post: Post; profile: ProfileSummary }) {
+export function PostEditor({
+  post,
+  profile,
+  contextOpen = false,
+}: {
+  post: Post;
+  profile: ProfileSummary;
+  /** Show the Context box from the start (the details page, where you answer comments). */
+  contextOpen?: boolean;
+}) {
   const update = useUpdatePost();
   const [content, setContent] = useState(post.content);
   const [tagsText, setTagsText] = useState(post.hashtags.join(" "));
   const [copied, setCopied] = useState(false);
+  const [showContext, setShowContext] = useState(contextOpen);
   const [clipboardError, setClipboardError] = useState<Error | null>(null);
 
   const hashtags = useMemo(() => parseHashtags(tagsText), [tagsText]);
@@ -92,6 +103,16 @@ export function PostEditor({ post, profile }: { post: Post; profile: ProfileSumm
           <Copy className="size-4" aria-hidden />
           {copied ? "Copied!" : "Copy post"}
         </button>
+        <button
+          type="button"
+          className={`btn btn-secondary ${showContext ? "!border-brand-text !bg-brand-soft !text-brand-text" : ""}`}
+          aria-expanded={showContext}
+          aria-controls={`context-${post.id}`}
+          onClick={() => setShowContext((open) => !open)}
+        >
+          <BookOpen className="size-4" aria-hidden />
+          Context
+        </button>
         <a className="btn btn-secondary" href={LINKEDIN_COMPOSE_URL} target="_blank" rel="noreferrer">
           <ExternalLink className="size-4" aria-hidden />
           Open LinkedIn
@@ -138,6 +159,8 @@ export function PostEditor({ post, profile }: { post: Post; profile: ProfileSumm
           </button>
         )}
       </div>
+
+      {showContext && <ContextPanel post={post} />}
     </section>
   );
 }

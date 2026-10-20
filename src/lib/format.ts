@@ -54,4 +54,13 @@ export function parseHashtags(text: string): string[] {
   return tags;
 }
 
+/** "https://www.example.com/a/b" -> "example.com" */
+export function hostname(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
 export const firstLine = (text: string): string => text.trim().split("\n")[0] ?? "";
